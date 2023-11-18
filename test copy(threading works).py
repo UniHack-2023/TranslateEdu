@@ -9,7 +9,7 @@ from TTS.utils.manage import ModelManager
 from TTS.utils.synthesizer import Synthesizer
 
 # Replace 'D:\TTS\TTS\.models.json' with the correct path
-path = "D:\\TTS\\TTS\\.models.json"
+path = "F:\\TTS\\TTS\\.models.json"
 
 model_manager = ModelManager(path)
 
@@ -29,10 +29,18 @@ class AudioTranslatorApp:
         self.video_path = tk.StringVar()
         custom_font = ctk.CTkFont(family="Barlow", size=1)
         btn_color = '#005900'
-        sidebar_frame = tk.Frame(self.master, width=250)
-        sidebar_frame.config(bg='#e4d9c5')
-        sidebar_frame.pack(side=tk.LEFT, fill=tk.Y)
-        master.title("Audio Translator App")
+        top_frame = tk.Frame(self.master, width=250)
+        top_frame.config(bg='#f2ece2')
+        top_frame.pack(side=tk.TOP, fill=tk.X,ipady=10)
+        middle_frame = tk.Frame(self.master, width=250,height=500)
+        middle_frame.config(bg='#e4d9c5')
+        middle_frame.place(anchor=tk.CENTER)
+        middle_frame.pack( fill=tk.X ,ipady=10)
+        bottom_frame = tk.Frame(self.master, width=250)
+        bottom_frame.config(bg='#586e6b')
+        bottom_frame.place(anchor=tk.N)
+        bottom_frame.pack( fill=tk.BOTH)
+        master.title("Audio Translator App")    
 
         # Language dropdown
         self.languages = {
@@ -58,25 +66,26 @@ class AudioTranslatorApp:
             "uk": "Ukrainian", "ur": "Urdu", "ug": "Uyghur", "uz": "Uzbek", "vi": "Vietnamese",
             "cy": "Welsh", "xh": "Xhosa", "yi": "Yiddish", "yo": "Yoruba", "zu": "Zulu"
         }
-        self.label = ctk.CTkLabel(sidebar_frame, text="Enter a YouTube link and download the audio:", text_color="black").pack(pady=10)
-        self.input_entry = tk.Entry(sidebar_frame, width=50)
-        self.input_entry.pack()
-        self.download_button = ctk.CTkButton(sidebar_frame, text="Download Audio", command=self.download_audio,
-                                             fg_color=btn_color).pack(pady=10)
-        self.label = ctk.CTkLabel(sidebar_frame, text="Or select an existing audio file:", text_color="black").pack(pady=10)
-        self.select_button = ctk.CTkButton(sidebar_frame, text="Select File", command=self.select_file,
-                                           fg_color=btn_color).pack(pady=10)
+        self.download_button = ctk.CTkButton(top_frame, text="Download Audio", command=self.download_audio,
+                                             fg_color=btn_color,width=50,height=50).grid(row=0,column=0,columnspan=1,rowspan=1,pady=10,padx=10,sticky="nsew")
+        self.select_button = ctk.CTkButton(top_frame, text="Select File", command=self.select_file,
+                                           fg_color=btn_color,width=50,height=50).grid(row=0,column=1,pady=10,sticky="nsew",rowspan=1)
+        self.input_entry = tk.Entry(top_frame,textvariable=self.video_path, width=40)
+        self.input_entry.insert(0,'Link or video location')
+        self.input_entry.grid(row=0,column=3,sticky=tk.E,padx=70   )
         self.selected_language = ctk.StringVar()
-        self.language_label = ctk.CTkLabel(sidebar_frame, text="Select input language:", text_color="black").pack(
-            pady=10)
-        self.language_dropdown = ttk.Combobox(sidebar_frame, textvariable=self.selected_language)
+        self.language_label = ctk.CTkLabel(middle_frame, text="Select input language:", text_color="black").grid(
+            row=0,column=0,padx=70)
+        self.language_dropdown = ttk.Combobox(middle_frame, textvariable=self.selected_language)
         self.language_dropdown['values'] = list(self.languages.values())
-        self.language_dropdown.pack()
-        self.translate_button = ctk.CTkButton(sidebar_frame, text="Translate", command=self.translate,
-                                              fg_color=btn_color).pack(pady=10)
+        self.language_dropdown.grid(row=1,column=0,padx=30,pady=10)
+        self.translate_button = ctk.CTkButton(middle_frame, text="Start", command=self.translate,
+                                              fg_color=btn_color,height=30,width=400)
+        self.translate_button.grid(column=1,rowspan=2,row=0,sticky="nsew",padx=30,pady=10)
 
-        self.output_text = tk.Text(master, height=25, width=60)
-        self.output_text.pack(pady=30, padx=30)
+        self.output_text = tk.Text(bottom_frame, height=8, width=320,bg='#b6c2aa',borderwidth=0
+        )
+        self.output_text.pack(pady=20, padx=20,side="bottom")
 
     def download_audio(self):
         video_url = self.input_entry.get().strip()
@@ -161,7 +170,6 @@ class AudioTranslatorApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.configure(bg='#f2ece2')
-    root.geometry("800x500")
+    root.geometry('800x320')
     app = AudioTranslatorApp(root)
     root.mainloop()
