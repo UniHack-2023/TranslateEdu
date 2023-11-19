@@ -1,3 +1,0 @@
-customtkinter
-opencv-python
-Pillow
