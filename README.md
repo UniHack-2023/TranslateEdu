@@ -35,4 +35,4 @@ Ensure you have the following installed:
 Run the application script:
 
 ```bash
-python audio_translator_app.py
+python app.py
