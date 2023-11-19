@@ -10,7 +10,7 @@ from TTS.utils.manage import ModelManager
 from TTS.utils.synthesizer import Synthesizer
 
 # Replace 'D:\TTS\TTS\.models.json' with the correct path
-path = "D:\\TTS\\TTS\\.models.json"
+path = "F:\\TTS\\TTS\\.models.json"
 
 model_manager = ModelManager(path)
 
@@ -28,19 +28,20 @@ class AudioTranslatorApp:
     def __init__(self, master):
         self.master = master
         self.video_path = tk.StringVar()
-        custom_font = ctk.CTkFont(family="Barlow", size=1)
-        btn_color = '#005900'
+        custom_font = ctk.CTkFont(family="Barlow", size=16)
+        custom_font1 = ctk.CTkFont(family="Barlow", size=12)
+        btn_color = '#4F6367'
         top_frame = tk.Frame(self.master, width=250)
-        top_frame.config(bg='#f2ece2')
-        top_frame.pack(side=tk.TOP, fill=tk.X, ipady=10)
+        top_frame.config(bg='#D8D8D8')
+        top_frame.pack(side=tk.TOP, fill=tk.X, ipady=0)
         middle_frame = tk.Frame(self.master, width=250, height=500)
-        middle_frame.config(bg='#e4d9c5')
+        middle_frame.config(bg='#7A9E9F')
         middle_frame.place(anchor=tk.CENTER)
-        middle_frame.pack(fill=tk.X, ipady=10)
+        middle_frame.pack(fill=tk.X, ipady=0)
         bottom_frame = tk.Frame(self.master, width=250)
-        bottom_frame.config(bg='#586e6b')
-        bottom_frame.place(anchor=tk.N)
-        bottom_frame.pack(fill=tk.BOTH)
+        bottom_frame.config(bg='#4F6367')
+        bottom_frame.pack(fill=tk.BOTH, expand=True, side=tk.BOTTOM)
+
         master.title("Audio Translator App")
 
         # Language dropdown
@@ -67,33 +68,33 @@ class AudioTranslatorApp:
             "uk": "Ukrainian", "ur": "Urdu", "ug": "Uyghur", "uz": "Uzbek", "vi": "Vietnamese",
             "cy": "Welsh", "xh": "Xhosa", "yi": "Yiddish", "yo": "Yoruba", "zu": "Zulu"
         }
-        self.download_button = ctk.CTkButton(top_frame, text="Download Audio", command=self.download_audio,
-                                             fg_color=btn_color, width=50, height=50).grid(row=0, column=0, columnspan=1,
+        self.download_button = ctk.CTkButton(top_frame, text="Download Audio",font=custom_font, command=self.download_audio,
+                                             fg_color=btn_color, width=150, height=70).grid(row=0, column=0, columnspan=1,
                                                                                          rowspan=1, pady=10, padx=10,
                                                                                          sticky="nsew")
-        self.select_button = ctk.CTkButton(top_frame, text="Select File", command=self.select_file,
-                                           fg_color=btn_color, width=50, height=50).grid(row=0, column=1, pady=10,
+        self.select_button = ctk.CTkButton(top_frame, text="Select File", font=custom_font,command=self.select_file,
+                                           fg_color=btn_color, width=150, height=70).grid(row=0, column=1, pady=10,
                                                                                        sticky="nsew", rowspan=1)
-        self.input_entry = tk.Entry(top_frame, textvariable=self.video_path, width=40)
+        self.input_entry = tk.Entry(top_frame, textvariable=self.video_path, width=55)
         self.input_entry.insert(0, 'Link or video location')
-        self.input_entry.grid(row=0, column=3, sticky=tk.E, padx=70)
+        self.input_entry.grid(row=0, column=3, sticky=tk.E, padx=30)
         self.selected_language = ctk.StringVar()
-        self.language_label = ctk.CTkLabel(middle_frame, text="Select input language:", text_color="black").grid(
-            row=0, column=0, padx=70)
+        self.language_label = ctk.CTkLabel(middle_frame, text="Select input language:",font=custom_font1, text_color="black").grid(
+            row=0, column=0, padx=65)
         self.language_dropdown = ttk.Combobox(middle_frame, textvariable=self.selected_language)
         self.language_dropdown['values'] = list(self.languages.values())
         self.language_dropdown.grid(row=1, column=0, padx=30, pady=10)
-        self.translate_button = ctk.CTkButton(middle_frame, text="Start", command=self.translate,
-                                              fg_color=btn_color, height=30, width=400)
+        self.translate_button = ctk.CTkButton(middle_frame, text="Start", font=custom_font,command=self.translate,
+                                              fg_color=btn_color, height=70, width=400)
         self.translate_button.grid(column=1, rowspan=2, row=0, sticky="nsew", padx=30, pady=10)
 
-        self.output_text = tk.Text(bottom_frame, height=8, width=320, bg='#b6c2aa', borderwidth=0
+        self.output_text = tk.Text(bottom_frame, height=8, width=320, bg='#EEF5DB', borderwidth=0
         )
         self.output_text.pack(pady=20, padx=20, side="bottom")
 
         # Progress Bar
-        self.progressbar = ttk.Progressbar(bottom_frame, length=100, mode="determinate")
-        self.progressbar.pack(pady=10)
+        self.progressbar = ttk.Progressbar(bottom_frame, length=600, mode="determinate")
+        self.progressbar.pack(pady=15)
 
     def download_audio(self):
         video_url = self.input_entry.get().strip()
@@ -116,8 +117,9 @@ class AudioTranslatorApp:
             self.output_text.insert(tk.END, f"Error: {e}")
 
     def select_file(self):
-        file_path = filedialog.askopenfilename(filetypes=[("Audio files", "*.mp3;*.wav;*.ogg")])
-        if file_path:
+        if file_path := filedialog.askopenfilename(
+            filetypes=[("Audio files", "*.mp3;*.wav;*.ogg")]
+        ):
             self.video_path.set(file_path)
 
     def download_youtube_audio(self, video_url):
@@ -128,60 +130,63 @@ class AudioTranslatorApp:
             audio_stream.download(output_path=os.getcwd(), filename="temp_audio.mp3")
             return audio_path
         except Exception as e:
-            raise ValueError(f"Error downloading audio from YouTube: {e}")
+            raise ValueError(f"Error downloading audio from YouTube: {e}") from e
 
     def translate_threaded(self):
         try:
-            input_text = self.video_path.get().strip()
-            if not input_text or (
-                    not input_text.startswith("https://www.youtube.com/") and not os.path.isfile(input_text)):
-                raise ValueError("Please provide a valid YouTube link or select an existing audio file.")
-
-            if input_text.startswith("https://www.youtube.com/"):
-                audio_path = os.path.join(os.getcwd(), "temp_audio.mp3")
-                if not os.path.isfile(audio_path):
-                    raise ValueError("Please download the audio first.")
-            else:
-                audio_path = input_text
-
-            if not os.path.isfile(audio_path):
-                raise ValueError(f"Audio file not found: {audio_path}")
-
-            input_lang_code = [code for code, lang in self.languages.items() if lang == self.selected_language.get()][
-                0]
-            translation_command = f'whisper "{audio_path}" --task translate --language {input_lang_code} --model medium'
-            translation_output = subprocess.check_output(translation_command, shell=False, text=True)
-            self.output_text.delete(1.0, tk.END)
-            self.output_text.insert(tk.END, translation_output)
-
-            translation_file_path = os.path.splitext(audio_path)[0] + ".txt"
-            # Read the translated text from the file
-            with open(translation_file_path, 'r', encoding='utf-8') as file:
-                lines = file.readlines()
-                # Keep only the text from the first line and remove new lines
-                text = ''.join(lines).replace('\n', '')
-
-            # Generate a new audio file
-            total_progress_steps = 100  # Adjust this value based on your desired loading bar behavior
-            for progress_step in range(total_progress_steps + 1):
-                # Simulating processing time for demonstration
-                time.sleep(0.05)
-                # Calculate the percentage completion
-                percentage_complete = (progress_step / total_progress_steps) * 100
-                self.update_loading_bar(percentage_complete)
-
-            outputs = syn.tts(text)
-            syn.save_wav(outputs, "audio-1.wav")
-
-            self.output_text.delete(1.0, tk.END)
-            self.output_text.insert(tk.END, "Translation complete.")
-
+            self._extracted_from_translate_threaded_3()
         except subprocess.CalledProcessError as e:
             self.output_text.delete(1.0, tk.END)  # Clear previous output
             self.output_text.insert(tk.END, f"Error during translation: {e}")
         except ValueError as e:
             self.output_text.delete(1.0, tk.END)  # Clear previous output
             self.output_text.insert(tk.END, f"Error: {e}")
+
+    # TODO Rename this here and in `translate_threaded`
+    def _extracted_from_translate_threaded_3(self):
+        input_text = self.video_path.get().strip()
+        if not input_text or (
+                not input_text.startswith("https://www.youtube.com/") and not os.path.isfile(input_text)):
+            raise ValueError("Please provide a valid YouTube link or select an existing audio file.")
+
+        if input_text.startswith("https://www.youtube.com/"):
+            audio_path = os.path.join(os.getcwd(), "temp_audio.mp3")
+            if not os.path.isfile(audio_path):
+                raise ValueError("Please download the audio first.")
+        else:
+            audio_path = input_text
+
+        if not os.path.isfile(audio_path):
+            raise ValueError(f"Audio file not found: {audio_path}")
+
+        input_lang_code = [code for code, lang in self.languages.items() if lang == self.selected_language.get()][
+            0]
+        translation_command = f'whisper "{audio_path}" --task translate --language {input_lang_code} --model medium'
+        translation_output = subprocess.check_output(translation_command, shell=False, text=True)
+        self.output_text.delete(1.0, tk.END)
+        self.output_text.insert(tk.END, translation_output)
+
+        translation_file_path = f"{os.path.splitext(audio_path)[0]}.txt"
+        # Read the translated text from the file
+        with open(translation_file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            # Keep only the text from the first line and remove new lines
+            text = ''.join(lines).replace('\n', '')
+
+        # Generate a new audio file
+        total_progress_steps = 100  # Adjust this value based on your desired loading bar behavior
+        for progress_step in range(total_progress_steps + 1):
+            # Simulating processing time for demonstration
+            time.sleep(0.05)
+            # Calculate the percentage completion
+            percentage_complete = (progress_step / total_progress_steps) * 100
+            self.update_loading_bar(percentage_complete)
+
+        outputs = syn.tts(text)
+        syn.save_wav(outputs, "audio-1.wav")
+
+        self.output_text.delete(1.0, tk.END)
+        self.output_text.insert(tk.END, "Translation complete.")
 
     def update_loading_bar(self, value):
         self.progressbar["value"] = value
@@ -198,6 +203,7 @@ class AudioTranslatorApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry('800x320')
+    root.geometry('700x400')
+    root.resizable(False,False)
     app = AudioTranslatorApp(root)
     root.mainloop()
